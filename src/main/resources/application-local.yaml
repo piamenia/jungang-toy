@@ -1,0 +1,117 @@
+
+### ===================================================== ###
+#default
+serverPort: 9090
+debugLevel: DEBUG
+
+#mysql
+db-host: localhost
+db-database: template-backend-01
+#redis
+
+#jpa
+ddlAuto: none
+
+---
+
+#common
+server:
+  servlet:
+    context-path: /api
+  port: ${serverPort}
+
+# i18n
+spring:
+  profiles: local
+  # output
+  output:
+    ansi:
+      enabled: ALWAYS
+  # jpa hibernate
+  jpa:
+    properties:
+      hibernate:
+        show-sql: true
+        physical_naming_strategy: io.dktechin.common.config.jpa.JpaPhysicalNamingStrategy
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        ddl-auto: ${ddlAuto}
+        id:
+          new_generator_mappings: false
+      hbm2ddl:
+        auto: ${ddlAuto}
+  # redis
+  redis: # TODO
+    database: 3
+    host: 10.202.27.187
+    port: 6379
+  # token
+  token:
+    prefix: Bearer
+    key: breeze.hwi
+    jwt:
+      expire: 3600000       # 1 시간 - 1000 * 60 * 60
+      header: Authorization
+    refresh:
+      expire: 86400000      # 1 일 - 1000 * 60 * 60 * 24
+      header: RefreshToken
+
+
+#  # task thread
+#  task:
+#    execution:
+#      pool:
+#        max-size: 30
+#        queue-capacity: 10
+#      thread-name-prefix: THREAD-
+#  # rabbitmq
+#  rabbitmq:
+#    host: new-makers-rabbitmq-sandbox.pg1.krane.9rum.cc
+#    port: 5672
+#    username: ${vault.rabbitmq.username}
+#    password: ${vault.rabbitmq.password}
+#    listener:
+#      simple:
+#        prefetch: 20
+#        default-requeue-rejected: false
+
+# log
+debug: true
+logging:
+  level:
+    root: info
+    org.springframework.boot.autoconfigure.logging: INFO
+    org.springframework.web.client: ${debugLevel}
+    org.hibernate: ${debugLevel}
+    org.springframework.security: DEBUG
+    io.dktechin: trace
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p - [%t] %logger{39}.%M : %m%n"
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(-){faint} [%t] %clr(%logger{15}.%-30.30M){cyan} %clr(:){faint} %m%n%wEx"
+
+
+
+
+# mysql database
+datasource: # TODO
+  host: 127.0.0.1
+  port: 3306
+  database: template-backend-01
+  username: service
+  password: service
+  hikari:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    max-lifetime: 28797000
+    minimum-idle: 6
+    maximum-pool-size: 20
+
+## Redisson
+redisson: # TODO
+  host: 10.202.27.187
+  port: 6379
+  database: 0
+  config:
+    idleConnectionTimeout: 5000
+    connectionPoolSize: 10
+    connectionMinimumIdleSize: 5
+    dnsMonitoringInterval: 5000
+    timeout: 600000

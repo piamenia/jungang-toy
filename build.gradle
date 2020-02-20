@@ -1,35 +1,132 @@
-plugins {
-    id 'org.springframework.boot' version '2.2.4.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id 'java'
+buildscript {
+    ext {
+        springBootVersion = '2.1.1.RELEASE'
+    }
+    repositories {
+        maven { url "http://repo.daumkakao.io/content/groups/daum-public/" }
+        maven { url "http://repo.daumkakao.io/content/groups/kakao-talkserver-group/" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath('io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE')
+    }
 }
 
-group = 'io.dktechin'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group 'io.dktechin'
+version '0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+    maven { url "http://repo.daumkakao.io/content/groups/daum-public/" }
+    maven { url "http://repo.daumkakao.io/content/groups/kakao-talkserver-group/" }
+}
+
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    implementation('org.springframework.boot:spring-boot-starter-amqp')
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("io.jsonwebtoken:jjwt:0.9.1")
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation("org.springframework.boot:spring-boot-starter-jetty")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc") {
+        exclude group: 'org.apache.tomcat', module: 'tomcat-jdbc'
     }
-    compile('org.springframework.boot:spring-boot-starter')
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-security")
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
-    compile group: 'com.google.guava', name: 'guava', version: '28.0-jre'
-    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.8.0'
-    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.8.0'
-    compile group: 'org.bgee.log4jdbc-log4j2', name: 'log4jdbc-log4j2-jdbc4.1', version: '1.16'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok:1.18.6'
+    implementation("mysql:mysql-connector-java")
+
+
+    // lombok
+    annotationProcessor("org.projectlombok:lombok:1.18.4")
+    compileOnly("org.projectlombok:lombok:1.18.4")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.4")
+    testCompileOnly("org.projectlombok:lombok:1.18.4")
+
+    //apache common
+    implementation('org.apache.commons:commons-lang3:3.8.1')
+    implementation('org.apache.commons:commons-collections4:4.3')
+    implementation('org.apache.commons:commons-text:1.6')
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
+
+
+    // mapstruct - bean mapper
+    implementation('org.mapstruct:mapstruct:1.2.0.Final')
+    implementation('org.mapstruct:mapstruct-jdk8:1.2.0.Final')
+    annotationProcessor('org.mapstruct:mapstruct-processor:1.2.0.Final')
+
+    // retrofit
+    implementation('com.squareup.retrofit2:retrofit:2.5.0')
+    implementation('com.squareup.retrofit2:converter-gson:2.5.0')
+    implementation('com.squareup.okhttp3:logging-interceptor:3.12.1')
+    compile group: 'com.squareup.retrofit2', name: 'converter-scalars', version: '2.5.0'
+
+
+
+    //redis
+    implementation('org.springframework.boot:spring-boot-starter-cache')
+    implementation('org.springframework.boot:spring-boot-starter-data-redis')
+    implementation('org.springframework.session:spring-session-data-redis:2.1.3.RELEASE')
+
+    // test
+    testImplementation("com.h2database:h2")
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude module: 'junit'
+    }
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.2.0')
+    testCompile('org.junit.jupiter:junit-jupiter-params:5.2.0')
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.2.0')
+
+    // swagger - documentation
+    implementation('io.springfox:springfox-swagger2:2.9.2')
+    implementation('io.springfox:springfox-swagger-ui:2.9.2')
+
+    // vault
+    compile 'org.springframework.vault:spring-vault-core:2.1.1.RELEASE'
+
+    // sentry
+    compile 'io.sentry:sentry-spring:1.7.28'
+
+    // Map <-> Json
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.10'
+
+    // HelloMIS
+    implementation('com.daumcorp.mis:hello-mis-api:1.2'){
+        exclude group: 'org.springframework', module: 'spring'
+    }
+}
+
+idea {
+    module {
+        outputDir file('build/classes/java/main')
+        testOutputDir file('build/classes/java/test')
+    }
+}
+
+if (project.convention.findPlugin(JavaPluginConvention)) {
+    sourceSets.main.output.resourcesDir = file("build/classes/java/main")
+    sourceSets.test.output.resourcesDir = file("build/classes/java/test")
+}
+
+compileJava.dependsOn(processResources)
+
+apply plugin: "war"
+war {
+    archiveName "template-backend-01.war"
 }
 
 test {
     useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
+
