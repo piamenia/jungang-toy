@@ -1,18 +1,28 @@
 package io.dktechin.template.controller;
 
+import io.dktechin.common.config.security.user.UserSecurityContext;
+import io.dktechin.common.wrapper.ResultResponse;
 import io.dktechin.template.controller.model.*;
+import io.dktechin.template.converter.UserConverter;
+import io.dktechin.template.service.UserService;
+import io.dktechin.template.service.vo.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @Api(value = "/", description = "Swagger 테스트", tags = {"/"})
 @RestController
 @Slf4j
-@RequestMapping(value = "/")
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class TestController {
+	private UserService userService;
+	private UserSecurityContext userSecurityContext;
+	private UserConverter userConverter;
 
 	@RequestMapping("/")
 	public String main() {
@@ -36,6 +46,19 @@ public class TestController {
 	@RequestMapping("/test/{param1}/{param2}")
 	public String paramTest(@PathVariable String param1, @PathVariable String param2) {
 		return "Swagger param test! => " + param1 + ", " + param2;
+	}
+
+	@GetMapping("/user")
+	@ApiOperation(value = "사용자 정보 가져오기")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "Authorization", value = "authorization header", required = true,
+			dataType= "string", paramType = "header", defaultValue = "Bearer ACCESS_TOKEN")
+	})
+	public ResultResponse<UserModel> user() {
+		String accountId = userSecurityContext.getAccountId();
+		User user = userService.get(accountId);
+		UserModel result = userConverter.converts(user);
+		return new ResultResponse<>(result);
 	}
 
 }

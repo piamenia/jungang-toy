@@ -16,11 +16,5 @@ public class User {
 
 	private Authority authority;
 
-	private String name;
-
-	private String departmentName;
-
-	private String imgUrl;
-
 	private LocalDateTime lastLoginAt;
 }
