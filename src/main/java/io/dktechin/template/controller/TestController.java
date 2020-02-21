@@ -11,8 +11,13 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "/", description = "Swagger 테스트", tags = {"/"})
 @RestController
 @Slf4j
-@RequestMapping(value = "/api")
+@RequestMapping(value = "/")
 public class TestController {
+
+	@RequestMapping("/")
+	public String main() {
+		return "main";
+	}
 
 	// hidden=true 추가하면, 해당 API는 조회되지 않음
 	@ApiOperation(value = "스웨거 테스트" , responseContainer = "ModelAndView.page")
@@ -33,8 +38,4 @@ public class TestController {
 		return "Swagger param test! => " + param1 + ", " + param2;
 	}
 
-	@RequestMapping("/model")
-	public String modelTest(@RequestBody SuperModel superModel) {
-		return "Swagger model test! => " + superModel.toString();
-	}
 }
