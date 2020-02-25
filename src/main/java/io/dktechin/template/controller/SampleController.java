@@ -28,14 +28,14 @@ public class SampleController {
 
 	@GetMapping("/sample/selectSample")
 	@ApiOperation(value="", notes="")
-	@ApiImplicitParams(
-		@ApiImplicitParam(name="", value="", required = true,
-		dataType = "string", paramType="header", defaultValue = "")
-	)
+//	@ApiImplicitParams(
+//		@ApiImplicitParam(name="", value="", required = false,
+//		dataType = "string", paramType="header", defaultValue = "")
+//	)
 	public ResultResponse<SampleModel> selectSample() {
 		String param = "";
 		SampleResult contents = sampleApiService.selectSample(param);
-		SampleModel result = sampleConverter.converters(contents);
+		SampleModel result = sampleConverter.resultToModel(contents);
 
 		return new ResultResponse<>(result);
 	}

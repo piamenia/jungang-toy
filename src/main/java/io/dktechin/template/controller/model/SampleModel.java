@@ -16,5 +16,4 @@ public class SampleModel {
 	private String lastName;
 	@ApiModelProperty
 	private String avatar;
-
 }
