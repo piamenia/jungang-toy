@@ -23,20 +23,15 @@ import javax.sql.DataSource;
  * <pre>
  * <b>History:</b>
  * lia.jung, 1.0, 2020/02/11 초기작성
+ * pepper.hoon, 1.0, 2020/02/20 인트라넷 소스에서 가져옴
+ * pepper.hoon, 1.1, 2020/02/20 템플릿프로젝트는 vault를 제외하므로 datasource 정보를 직접 설정
  * </pre>
  *
- * @author lia.jung
- * @version 1.0,
+ * @author pepper.hoon
+ * @version 1.1,
  */
-
 @Configuration
 public class DatabaseSourceConfig {
-
-//	@Autowired
-//	private VaultOperations vaultOperations;
-
-//	@Value("${vault.path}")
-//	private String vaultPath;
 
 	@Value("${datasource.host}")
 	private String host;
@@ -53,14 +48,13 @@ public class DatabaseSourceConfig {
 	@Primary
 	@ConfigurationProperties(prefix = "datasource.hikari")
 	public DataSource dataSource() {
-//		DatabaseSourceDto dto = vaultOperations.read(vaultPath, DatabaseSourceDto.class).getData();
 		return DataSourceBuilder
 			.create()
 			.type(HikariDataSource.class)
 			.driverClassName("com.mysql.cj.jdbc.Driver")
 			.url(
 				String.format(
-					"jdbc:mysql://%s:%s/%s?serverTimezone=UTC",
+					"jdbc:mysql://%s:%s/%s?serverTimezone=UTC&verifyServerCertificate=false&useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true",
 					host,
 					port,
 					database

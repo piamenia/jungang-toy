@@ -7,6 +7,7 @@ import io.dktechin.template.service.UserService;
 import io.dktechin.template.service.vo.User;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TokenAuthenticationService {
@@ -55,6 +57,7 @@ public class TokenAuthenticationService {
 		response.addHeader(jwtHeaderString, tokenPrefix + " " + jwt);
 
 		String refreshToken = tokenProvider.issueToken(user, refreshExpireDuration);
+		log.info("RefreshToken: " + refreshToken);
 		refreshTokenService.save(accountId, refreshToken);
 		response.addHeader(refreshHeaderString, tokenPrefix + " " + refreshToken);
 	}
