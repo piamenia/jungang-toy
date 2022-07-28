@@ -32,7 +32,7 @@ spring:
     properties:
       hibernate:
         show-sql: false
-        physical_naming_strategy: io.dktechin.common.config.jpa.JpaPhysicalNamingStrategy
+        physical_naming_strategy: hoon.pepper.common.config.jpa.JpaPhysicalNamingStrategy
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         ddl-auto: ${ddlAuto}
         id:
@@ -83,7 +83,7 @@ logging:
     org.springframework.web.client: ${debugLevel}
     org.hibernate: ${debugLevel}
     org.springframework.security: DEBUG
-    io.dktechin: trace
+    hoon.pepper: trace
   pattern:
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p - [%t] %logger{39}.%M : %m%n"
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(-){faint} [%t] %clr(%logger{15}.%-30.30M){cyan} %clr(:){faint} %m%n%wEx"
