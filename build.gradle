@@ -111,9 +111,8 @@ if (project.convention.findPlugin(JavaPluginConvention)) {
 
 compileJava.dependsOn(processResources)
 
-apply plugin: "war"
-war {
-    archiveName "template-backend-01.war"
+bootJar {
+    archiveName "template-backend.jar"
 }
 
 test {

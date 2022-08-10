@@ -54,7 +54,7 @@ public class DatabaseSourceConfig {
 			.driverClassName("com.mysql.cj.jdbc.Driver")
 			.url(
 				String.format(
-					"jdbc:mysql://%s:%s/%s?serverTimezone=UTC&verifyServerCertificate=false&useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true",
+					"jdbc:mysql://%s:%s/%s?serverTimezone=Asia/Seoul&verifyServerCertificate=false&useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true",
 					host,
 					port,
 					database

@@ -1,16 +1,17 @@
 
 ### ===================================================== ###
 #default
-serverPort: 9090
+serverPort: 8080
 debugLevel: DEBUG
 
 #mysql
-db-host: localhost
+db-host: ec2-3-39-205-107.ap-northeast-2.compute.amazonaws.com
 db-port: 3306
-db-database: template-backend-01
+db-database: jungang
 #redis
-redis-host: localhost
+redis-host: 3.39.205.107
 redis-port: 6379
+redis-database: 0
 #jpa
 ddlAuto: update
 
@@ -24,7 +25,7 @@ server:
 
 # i18n
 spring:
-  profiles: local
+  profiles: prod
   # output
   output:
     ansi:
@@ -46,6 +47,7 @@ spring:
     database: ${redis-database}
     host: ${redis-host}
     port: ${redis-port}
+    password: jungang123!@#
   # token
   token:
     prefix: Bearer
@@ -98,8 +100,8 @@ datasource: # TODO
   host: ${db-host}
   port: ${db-port}
   database: ${db-database}
-  username: service
-  password: service
+  username: jungang
+  password: jungang123!@#
   hikari:
     driver-class-name: com.mysql.cj.jdbc.Driver
     max-lifetime: 28797000
@@ -111,6 +113,7 @@ redisson: # TODO
   host: ${redis-host}
   port: ${redis-port}
   database: ${redis-database}
+  password: jungang123!@#
   config:
     idleConnectionTimeout: 5000
     connectionPoolSize: 10
