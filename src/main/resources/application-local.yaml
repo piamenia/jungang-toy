@@ -5,12 +5,14 @@ serverPort: 9090
 debugLevel: DEBUG
 
 #mysql
-db-host: localhost
+db-host: 3.39.205.107
 db-port: 3306
-db-database: template-backend-01
+db-database: jungang
 #redis
-redis-host: localhost
+redis-host: 3.39.205.107
 redis-port: 6379
+redis-database: 0
+redis-password: jungang123!@#
 #jpa
 ddlAuto: update
 
@@ -34,6 +36,7 @@ spring:
     properties:
       hibernate:
         show-sql: false
+        format_sql: false
         physical_naming_strategy: hoon.pepper.common.config.jpa.JpaPhysicalNamingStrategy
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         ddl-auto: ${ddlAuto}
@@ -46,6 +49,7 @@ spring:
     database: ${redis-database}
     host: ${redis-host}
     port: ${redis-port}
+    password: ${redis-password}
   # token
   token:
     prefix: Bearer
@@ -56,6 +60,12 @@ spring:
     refresh:
       expire: 86400000      # 1 일 - 1000 * 60 * 60 * 24
       header: RefreshToken
+  aws:
+    bucket: jungang-conti
+    access-key: AKIAVGETDHZR7GLRWTUT
+    secret-key: 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
+  admin:
+    password: 19530802
 
 
 #  # task thread
@@ -98,8 +108,8 @@ datasource: # TODO
   host: ${db-host}
   port: ${db-port}
   database: ${db-database}
-  username: service
-  password: service
+  username: jungang
+  password: jungang123!@#
   hikari:
     driver-class-name: com.mysql.cj.jdbc.Driver
     max-lifetime: 28797000

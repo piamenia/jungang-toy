@@ -1,7 +1,7 @@
 package hoon.pepper.common.config.security.jwt;
 
-import hoon.pepper.template.service.UserService;
-import hoon.pepper.template.service.vo.User;
+import hoon.pepper.conti.service.UserService;
+import hoon.pepper.conti.service.vo.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -32,3 +32,4 @@ out/
 .vscode/
 
 /src/main/generated
+/src/main/generate

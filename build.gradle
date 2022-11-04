@@ -1,13 +1,15 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.1.RELEASE'
+        springBootVersion = '2.5.12'
     }
     repositories {
         maven { url "https://repo.maven.apache.org/maven2/" }
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath('io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE')
+        classpath('io.spring.gradle:dependency-management-plugin:1.0.9.RELEASE')
+        classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10")
     }
 }
 
@@ -15,22 +17,25 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: "com.ewerk.gradle.plugins.querydsl" //querydsl
 
 group 'hoon.pepper'
 version '0.1-SNAPSHOT'
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = '13'
+targetCompatibility = '13'
 
 repositories {
     maven { url "https://repo.maven.apache.org/maven2/" }
+    maven { url "https://plugins.gradle.org/m2/" }
 }
 
 configurations {
     compile.exclude module: "spring-boot-starter-tomcat"
+    querydsl.extendsFrom compileClasspath    // querydsl
 }
 
 dependencies {
-    implementation('org.springframework.boot:spring-boot-starter-amqp')
+//    implementation('org.springframework.boot:spring-boot-starter-amqp')
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("io.jsonwebtoken:jjwt:0.9.1")
     implementation('org.springframework.boot:spring-boot-starter-web')
@@ -44,22 +49,25 @@ dependencies {
 
 
     // lombok
-    annotationProcessor("org.projectlombok:lombok:1.18.4")
-    compileOnly("org.projectlombok:lombok:1.18.4")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.4")
-    testCompileOnly("org.projectlombok:lombok:1.18.4")
+    annotationProcessor("org.projectlombok:lombok:1.18.12")
+    compileOnly("org.projectlombok:lombok:1.18.12")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.12")
+    testCompileOnly("org.projectlombok:lombok:1.18.12")
 
     //apache common
     implementation('org.apache.commons:commons-lang3:3.8.1')
     implementation('org.apache.commons:commons-collections4:4.3')
     implementation('org.apache.commons:commons-text:1.6')
+
+    implementation 'org.apache.httpcomponents:httpclient:4.5.12'
+
     compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
 
 
     // mapstruct - bean mapper
-    implementation('org.mapstruct:mapstruct:1.2.0.Final')
-    implementation('org.mapstruct:mapstruct-jdk8:1.2.0.Final')
-    annotationProcessor('org.mapstruct:mapstruct-processor:1.2.0.Final')
+    implementation('org.mapstruct:mapstruct:1.3.1.Final')
+    implementation('org.mapstruct:mapstruct-jdk8:1.3.1.Final')
+    annotationProcessor('org.mapstruct:mapstruct-processor:1.3.1.Final')
 
     // retrofit
     implementation('com.squareup.retrofit2:retrofit:2.5.0')
@@ -72,16 +80,17 @@ dependencies {
     //redis
     implementation('org.springframework.boot:spring-boot-starter-cache')
     implementation('org.springframework.boot:spring-boot-starter-data-redis')
-    implementation('org.springframework.session:spring-session-data-redis:2.1.3.RELEASE')
+    implementation('org.springframework.session:spring-session-data-redis:2.2.1.RELEASE')
 
     // test
     testImplementation("com.h2database:h2")
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude module: 'junit'
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    testImplementation('org.junit.jupiter:junit-jupiter-api:5.2.0')
-    testCompile('org.junit.jupiter:junit-jupiter-params:5.2.0')
-    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.2.0')
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.5.2')
+//    testCompile('org.junit.jupiter:junit-jupiter-params:5.2.0')
+//    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.2.0')
 
     // swagger - documentation
     implementation('io.springfox:springfox-swagger2:2.9.2')
@@ -94,7 +103,18 @@ dependencies {
     compile 'io.sentry:sentry-spring:1.7.28'
 
     // Map <-> Json
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.10'
+//    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.0'
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.3.0-rc1'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2'
+    // QueryDSL
+    implementation 'com.querydsl:querydsl-jpa'
+    // AWS S3
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+
+    // https://mvnrepository.com/artifact/javax.validation/validation-api
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+
 }
 
 idea {
@@ -121,4 +141,28 @@ test {
         events "passed", "skipped", "failed"
     }
 }
+
+// querydsl setting start
+def querydslDir = "src/main/generate"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
+
+project.afterEvaluate {
+    project.tasks.compileQuerydsl.options.compilerArgs = [
+            "-proc:only",
+            "-processor", project.querydsl.processors() +
+                    ',lombok.launch.AnnotationProcessorHider$AnnotationProcessor'
+    ]
+}
+// querydsl setting end
 

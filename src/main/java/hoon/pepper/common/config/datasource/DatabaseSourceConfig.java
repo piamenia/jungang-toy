@@ -10,7 +10,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.vault.core.VaultOperations;
+//import org.springframework.vault.core.VaultOperations;
 
 import javax.sql.DataSource;
 

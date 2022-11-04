@@ -1,7 +1,7 @@
 
 ### ===================================================== ###
 #default
-serverPort: 8080
+serverPort: 8081
 debugLevel: DEBUG
 
 #mysql
@@ -12,6 +12,7 @@ db-database: jungang
 redis-host: 3.39.205.107
 redis-port: 6379
 redis-database: 0
+redis-password: jungang123!@#
 #jpa
 ddlAuto: update
 
@@ -47,7 +48,7 @@ spring:
     database: ${redis-database}
     host: ${redis-host}
     port: ${redis-port}
-    password: jungang123!@#
+    password: ${redis-password}
   # token
   token:
     prefix: Bearer
@@ -58,6 +59,12 @@ spring:
     refresh:
       expire: 86400000      # 1 일 - 1000 * 60 * 60 * 24
       header: RefreshToken
+  aws:
+    bucket: jungang-conti
+    access-key: AKIAVGETDHZR7GLRWTUT
+    secret-key: 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
+  admin:
+    password: 19530802
 
 
 #  # task thread

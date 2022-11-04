@@ -1,9 +1,9 @@
 package hoon.pepper.common.config.security.jwt;
 
 import hoon.pepper.common.exception.UnauthorizedException;
-import hoon.pepper.template.service.RefreshTokenService;
-import hoon.pepper.template.service.UserService;
-import hoon.pepper.template.service.vo.User;
+import hoon.pepper.conti.service.RefreshTokenService;
+import hoon.pepper.conti.service.UserService;
+import hoon.pepper.conti.service.vo.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.AuthenticationProvider;

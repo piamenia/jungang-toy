@@ -2,9 +2,9 @@ package hoon.pepper.common.config.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hoon.pepper.common.util.JsonUtils;
-import hoon.pepper.template.service.RefreshTokenService;
-import hoon.pepper.template.service.UserService;
-import hoon.pepper.template.service.vo.User;
+import hoon.pepper.conti.service.RefreshTokenService;
+import hoon.pepper.conti.service.UserService;
+import hoon.pepper.conti.service.vo.User;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

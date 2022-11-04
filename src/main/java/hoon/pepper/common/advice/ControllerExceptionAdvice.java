@@ -12,12 +12,14 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ValidationException;
 
 @Slf4j
 @RestControllerAdvice
+@EnableWebMvc
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class ControllerExceptionAdvice extends ResponseEntityExceptionHandler {
 
@@ -41,14 +43,14 @@ public class ControllerExceptionAdvice extends ResponseEntityExceptionHandler {
 		return resultResponse;
 	}
 
-	@ExceptionHandler({UnauthorizedException.class})
-	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-	public ResultResponse handleException(UnauthorizedException e) {
-		ResultResponse resultResponse = new ResultResponse(HttpStatus.UNAUTHORIZED);
-		resultResponse.setCode(40100);
-		resultResponse.setMessage("Unauthorized");
-		return resultResponse;
-	}
+//	@ExceptionHandler({UnauthorizedException.class})
+//	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+//	public ResultResponse handleException(UnauthorizedException e) {
+//		ResultResponse resultResponse = new ResultResponse(HttpStatus.UNAUTHORIZED);
+//		resultResponse.setCode(40100);
+//		resultResponse.setMessage("Unauthorized");
+//		return resultResponse;
+//	}
 
 	@ExceptionHandler({AccessDeniedException.class})
 	@ResponseStatus(HttpStatus.FORBIDDEN)

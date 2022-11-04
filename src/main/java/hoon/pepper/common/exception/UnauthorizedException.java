@@ -14,4 +14,8 @@ public class UnauthorizedException extends PlatformException {
 	public UnauthorizedException(String message, int code) {
 		super(HttpStatus.UNAUTHORIZED, code, message);
 	}
+
+	public UnauthorizedException(String message, UnauthorizedDetail detail) {
+		super(HttpStatus.UNAUTHORIZED, detail.value(), message);
+	}
 }

@@ -1,7 +1,9 @@
 package hoon.pepper.common.config.security.jwt;
 
+import hoon.pepper.common.exception.UnauthorizedDetail;
+import hoon.pepper.common.exception.UnauthorizedException;
 import hoon.pepper.common.util.JsonUtils;
-import hoon.pepper.template.service.vo.User;
+import hoon.pepper.conti.service.vo.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -9,6 +11,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jetty.util.StringUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.token.Sha512DigestUtils;
 import org.springframework.stereotype.Component;
@@ -68,11 +71,16 @@ public class TokenProvider {
 				.setSigningKey(secret)
 				.parseClaimsJws(token).getBody();
 		} catch (ExpiredJwtException expiredException) {
-			log.info("Expired token.");
-			return null;
+			log.info("Expired token");
+			throw new UnauthorizedException("Expired token", UnauthorizedDetail.EXPIRED_TOKEN);
 		} catch (Exception e) {
-			log.info("Token parse error.");
-			return null;
+			e.printStackTrace();
+			log.info("Token parse error");
+			if (StringUtil.isBlank(token)) {
+				throw new UnauthorizedException("Token is null", UnauthorizedDetail.TOKEN_IS_NULL);
+			} else {
+				throw new UnauthorizedException("Token parse error", UnauthorizedDetail.TOKEN_PARSE_ERROR);
+			}
 		}
 	}
 }
