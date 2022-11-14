@@ -61,7 +61,7 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
             )
             .limit(pageable.getPageSize())
             .offset(pageable.getOffset())
-            .orderBy(contiEntity.createdAt.desc())
+            .orderBy(contiEntity.date.desc(), contiEntity.createdAt.desc())
             .fetchResults();
 
         return new PageImpl<>(results.getResults(), pageable, results.getTotal());
