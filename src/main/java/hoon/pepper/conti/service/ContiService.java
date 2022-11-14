@@ -7,6 +7,7 @@ import hoon.pepper.conti.controller.model.SheetModel;
 import hoon.pepper.conti.controller.model.SongModel;
 import hoon.pepper.conti.controller.model.request.ContiListRequest;
 import hoon.pepper.conti.controller.model.request.ContiRequest;
+import hoon.pepper.conti.controller.model.request.SheetRequest;
 import hoon.pepper.conti.converter.ContiConverter;
 import hoon.pepper.conti.converter.FileConverter;
 import hoon.pepper.conti.converter.SheetConverter;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +39,7 @@ public class ContiService {
 	private final FileRepository fileRepository;
 	private final FileConverter fileConverter;
 
+	@Transactional(readOnly = true)
 	public Page<ContiListModel> getContiList(ContiListRequest contiListRequest, Pageable pageable) {
 		Page<ContiListModel> page = contiRepository.getContiList(contiListRequest, pageable);
 		page.getContent().forEach(conti -> {
@@ -45,6 +48,7 @@ public class ContiService {
 		return page;
 	}
 
+	@Transactional(readOnly = true)
 	public ContiDetailModel getContiDetail(Long contiId) {
 		ContiDetailModel contiDetailModel = contiRepository.getContiDetail(contiId).orElseThrow(() -> new EmptyDataException("conti not present"));
 		List<SongModel> songModelList = songConverter.converts(songRepository.findByContiId(contiId));
@@ -59,6 +63,7 @@ public class ContiService {
 		return contiDetailModel;
 	}
 
+	@Transactional
 	public void postConti(ContiRequest conti) {
 		ContiEntity contiEntity = contiRepository.save(contiConverter.converts(conti));
 		conti.getSongList().forEach(song -> {
@@ -77,6 +82,7 @@ public class ContiService {
 		});
 	}
 
+	@Transactional
 	public void putConti(ContiRequest conti) {
 		contiRepository.save(contiConverter.converts(conti));
 		// 곡 삭제
@@ -84,12 +90,14 @@ public class ContiService {
 		conti.getSongList().forEach(song -> {
 			List<SheetEntity> sheetEntityList = sheetRepository.findBySongId(song.getSongId());
 			// 악보파일 삭제
-			fileService.multiRemove(fileConverter.converts(fileRepository.findByFileIdIn(sheetRepository.findBySongId(song.getSongId()).stream().map(SheetEntity::getFileId).collect(Collectors.toList()))));
+//			fileService.multiRemove(fileConverter.converts(fileRepository.findByFileIdIn(sheetRepository.findBySongId(song.getSongId()).stream().map(SheetEntity::getFileId).collect(Collectors.toList()))));
 			// 악보삭제
-			sheetRepository.deleteInBatch(sheetEntityList);
+			sheetRepository.deleteAll(sheetEntityList);
 			// 새로 추가
-			SongEntity songEntity = songRepository.save(songConverter.converts(song));
-			song.getSheetList().forEach(sheet -> {
+			SongEntity songEntity = songConverter.converts(song);
+			songEntity.setContiId(conti.getContiId());
+			songEntity = songRepository.save(songEntity);
+			for (SheetRequest sheet : song.getSheetList()) {
 				SheetEntity sheetEntity =
 					SheetEntity.builder()
 						.songId(songEntity.getSongId())
@@ -97,15 +105,21 @@ public class ContiService {
 						.fileId(sheet.getFileId())
 						.build();
 				sheetRepository.save(sheetEntity);
-			});
+			}
 		});
 	}
 
+	@Transactional
 	public void deleteConti(Long contiId) {
 		songRepository.findByContiId(contiId).forEach(songEntity -> {
 			fileService.multiRemove(fileConverter.converts(fileRepository.findByFileIdIn(sheetRepository.findBySongId(songEntity.getSongId()).stream().map(SheetEntity::getFileId).collect(Collectors.toList()))));
 		});
 		songRepository.deleteByContiId(contiId);
 		contiRepository.deleteById(contiId);
+	}
+
+	@Transactional(readOnly = true)
+	public boolean checkContiPassword(Long contiId, String password) {
+		return contiRepository.findById(contiId).orElseThrow(() -> new EmptyDataException("conti not present")).getPassword().equals(password);
 	}
 }

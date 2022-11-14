@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface FileRepositoryCustom {
     List<FileModel> getFiles(List<Long> fileIdList);
+    void updateFileDelete(Long fileId);
+    void updateFileDeleteByFileIdIn(List<Long> fileIdList);
 }

@@ -49,4 +49,7 @@ public class FileEntity {
 	@Column(updatable = false, nullable = false)
 	@CreatedDate
 	private LocalDateTime createdAt;
+
+	@Column(updatable = false)
+	private LocalDateTime deletedAt;
 }

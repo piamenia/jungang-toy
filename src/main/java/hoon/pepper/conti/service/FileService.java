@@ -68,10 +68,12 @@ public class FileService {
         for (FileModel file: fileList) {
             accessKeyList.add(file.getFileAccessKey());
         }
-        fileRepository.deleteAllByFileIdIn(fileIdList);
-        for(String key : accessKeyList) {
-            awsS3Handler.delete(key);
-        }
+        fileRepository.updateFileDeleteByFileIdIn(fileIdList);
+//        fileRepository.deleteAllByFileIdIn(fileIdList);
+        // TODO aws s3 파일 삭제
+//        for(String key : accessKeyList) {
+//            awsS3Handler.delete(key);
+//        }
     }
     @Transactional
     public void multiRemove(List<FileModel> fileList) {
@@ -81,9 +83,11 @@ public class FileService {
             accessKeyList.add(file.getFileAccessKey());
             fileIdList.add(file.getFileId());
         }
-        fileRepository.deleteAllByFileIdIn(fileIdList);
-        for(String key : accessKeyList) {
-            awsS3Handler.delete(key);
-        }
+        fileRepository.updateFileDeleteByFileIdIn(fileIdList);
+//        fileRepository.deleteAllByFileIdIn(fileIdList);
+        // TODO aws s3 파일 삭제
+//        for(String key : accessKeyList) {
+//            awsS3Handler.delete(key);
+//        }
     }
 }

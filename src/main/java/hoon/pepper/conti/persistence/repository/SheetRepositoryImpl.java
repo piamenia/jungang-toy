@@ -22,6 +22,7 @@ public class SheetRepositoryImpl implements SheetRepositoryCustom {
             .select(Projections.fields(SheetModel.class,
                 sheetEntity.sheetId,
                 sheetEntity.sheetOrder,
+                fileEntity.fileId,
                 fileEntity.fileName,
                 fileEntity.orgFileName,
                 fileEntity.fileAccessKey,
@@ -30,7 +31,7 @@ public class SheetRepositoryImpl implements SheetRepositoryCustom {
                 ))
             .from(sheetEntity)
             .join(fileEntity).on(sheetEntity.fileId.eq(fileEntity.fileId))
-            .where(sheetEntity.songId.eq(songId))
+            .where(sheetEntity.songId.eq(songId), fileEntity.deletedAt.isNull())
             .fetch();
     }
 }

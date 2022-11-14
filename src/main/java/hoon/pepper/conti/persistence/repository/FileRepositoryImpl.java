@@ -6,9 +6,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import hoon.pepper.conti.controller.model.FileModel;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static hoon.pepper.conti.persistence.entity.QFileEntity.fileEntity;
+import static hoon.pepper.conti.persistence.entity.QSongEntity.songEntity;
 
 @RequiredArgsConstructor
 public class FileRepositoryImpl implements FileRepositoryCustom {
@@ -25,5 +27,23 @@ public class FileRepositoryImpl implements FileRepositoryCustom {
             .from(fileEntity)
             .where(fileEntity.fileId.in(fileIdList))
             .fetch();
+    }
+
+    @Override
+    public void updateFileDelete(Long fileId) {
+        queryFactory
+        .update(fileEntity)
+            .set(fileEntity.deletedAt, LocalDateTime.now())
+            .where(fileEntity.fileId.eq(fileId))
+            .execute();
+    }
+
+    @Override
+    public void updateFileDeleteByFileIdIn(List<Long> fileIdList) {
+        queryFactory
+            .update(fileEntity)
+            .set(fileEntity.deletedAt, LocalDateTime.now())
+            .where(fileEntity.fileId.in(fileIdList))
+            .execute();
     }
 }

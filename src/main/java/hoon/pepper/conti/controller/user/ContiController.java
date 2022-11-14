@@ -45,6 +45,25 @@ public class ContiController {
         return new ResultResponse<>(pageContents);
     }
 
+    @GetMapping("/list/half-year")
+    @ApiOperation(value="콘티 리스트")
+    public ResultResponse<PageContents<ContiListModel>> getContiListByHalfYear(@RequestParam Integer year,
+                                                                     @RequestParam Integer halfYear,
+                                                                     @RequestParam(required = false, defaultValue = "1") int offset,
+                                                                     @RequestParam(required = false, defaultValue = "10") int limit) {
+        Pageable pageable = PageRequest.of(offset - 1, limit);
+        ContiListRequest contiListRequest = ContiListRequest.builder().year(year).halfYear(halfYear).build();
+        Page<ContiListModel> results = contiService.getContiList(contiListRequest, pageable);
+        JpaPageContents<ContiListModel, ContiListModel> pageContents =
+            new JpaPageContents<ContiListModel, ContiListModel>(results) {
+                @Override
+                public ContiListModel converts(ContiListModel content) {
+                    return contiConverter.converts(content);
+                }
+            };
+        return new ResultResponse<>(pageContents);
+    }
+
     @GetMapping("/{contiId}")
     @ApiOperation(value="콘티 상세")
     public ResultResponse<ContiDetailModel> getContiDetail(@PathVariable Long contiId) {

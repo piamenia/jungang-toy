@@ -3,6 +3,7 @@ package hoon.pepper.conti.controller.admin;
 import hoon.pepper.common.wrapper.JpaPageContents;
 import hoon.pepper.common.wrapper.PageContents;
 import hoon.pepper.common.wrapper.ResultResponse;
+import hoon.pepper.conti.controller.model.BooleanResultModel;
 import hoon.pepper.conti.controller.model.ContiDetailModel;
 import hoon.pepper.conti.controller.model.ContiListModel;
 import hoon.pepper.conti.controller.model.EmptyResultModel;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/conti")
@@ -34,6 +37,25 @@ public class AdminContiController {
                                                                      @RequestParam(required = false, defaultValue = "10") int limit) {
         Pageable pageable = PageRequest.of(offset - 1, limit);
         ContiListRequest contiListRequest = ContiListRequest.builder().year(year).month(month).build();
+        Page<ContiListModel> results = contiService.getContiList(contiListRequest, pageable);
+        JpaPageContents<ContiListModel, ContiListModel> pageContents =
+            new JpaPageContents<ContiListModel, ContiListModel>(results) {
+                @Override
+                public ContiListModel converts(ContiListModel content) {
+                    return contiConverter.converts(content);
+                }
+            };
+        return new ResultResponse<>(pageContents);
+    }
+
+    @GetMapping("/list/half-year")
+    @ApiOperation(value="콘티 리스트")
+    public ResultResponse<PageContents<ContiListModel>> getContiListByHalfYear(@RequestParam Integer year,
+                                                                               @RequestParam Integer halfYear,
+                                                                               @RequestParam(required = false, defaultValue = "1") int offset,
+                                                                               @RequestParam(required = false, defaultValue = "10") int limit) {
+        Pageable pageable = PageRequest.of(offset - 1, limit);
+        ContiListRequest contiListRequest = ContiListRequest.builder().year(year).halfYear(halfYear).build();
         Page<ContiListModel> results = contiService.getContiList(contiListRequest, pageable);
         JpaPageContents<ContiListModel, ContiListModel> pageContents =
             new JpaPageContents<ContiListModel, ContiListModel>(results) {
@@ -70,5 +92,11 @@ public class AdminContiController {
     public ResultResponse<EmptyResultModel> deleteConti(@PathVariable Long contiId) {
         contiService.deleteConti(contiId);
         return new ResultResponse<>(new EmptyResultModel());
+    }
+
+    @PostMapping("/password/{contiId}")
+    @ApiOperation("콘티 암호 체크")
+    public ResultResponse<BooleanResultModel> checkContiPassword(@PathVariable Long contiId, @RequestBody Map<String, Object> body) {
+        return new ResultResponse<>(new BooleanResultModel(contiService.checkContiPassword(contiId, (String)body.get("password"))));
     }
 }

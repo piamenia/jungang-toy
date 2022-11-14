@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 public class SheetModel {
 	@ApiModelProperty(value = "악보 ID", example = "1")
 	private Long sheetId;
+	@ApiModelProperty(value = "file ID")
+	private Long fileId;
 	@ApiModelProperty(value = "업로드파일명", example = "item.jpg")
 	private String fileName;
 	@ApiModelProperty(value = "원본파일명", example = "example.jpg")

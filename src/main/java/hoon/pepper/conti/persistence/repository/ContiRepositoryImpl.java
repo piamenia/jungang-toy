@@ -14,6 +14,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static hoon.pepper.conti.persistence.entity.QCategoryEntity.categoryEntity;
@@ -33,6 +36,15 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
         if (!ObjectUtils.isEmpty(contiListRequest.getDepart())) {
             this.where.and(contiEntity.depart.eq(contiListRequest.getDepart()));
         }
+        if (contiListRequest.getHalfYear() != 0) {
+            List<Integer> months = new ArrayList<>();
+            for (Integer month: Arrays.asList(1,2,3,4,5,6)) {
+                months.add(month + contiListRequest.getHalfYear() * 6);
+            }
+            this.where.and(contiEntity.date.month().in(months));
+        } else if (contiListRequest.getMonth() != 0) {
+            this.where.and(contiEntity.date.month().eq(contiListRequest.getMonth()));
+        }
         QueryResults<ContiListModel> results = queryFactory
             .select(Projections.fields(ContiListModel.class,
                 contiEntity.contiId,
@@ -44,8 +56,8 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
             .from(contiEntity)
             .join(categoryEntity).on(contiEntity.categoryId.eq(categoryEntity.categoryId))
             .where(
-                contiEntity.date.year().eq(contiListRequest.getYear()),
-                contiEntity.date.month().eq(contiListRequest.getMonth())
+                where,
+                contiEntity.date.year().eq(contiListRequest.getYear())
             )
             .limit(pageable.getPageSize())
             .offset(pageable.getOffset())
