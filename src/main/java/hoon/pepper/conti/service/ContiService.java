@@ -84,7 +84,12 @@ public class ContiService {
 
 	@Transactional
 	public void putConti(ContiRequest conti) {
-		contiRepository.save(contiConverter.converts(conti));
+		ContiEntity contiEntity = contiRepository.findById(conti.getContiId()).orElseThrow(() -> new EmptyDataException());
+		contiEntity.setCategoryId(conti.getCategoryId());
+		contiEntity.setDate(conti.getDate());
+		contiEntity.setDepart(conti.getDepart());
+		contiEntity.setTitle(conti.getTitle());
+		contiRepository.save(contiEntity);
 		// 곡 삭제
 		songRepository.deleteByContiId(conti.getContiId());
 		conti.getSongList().forEach(song -> {
