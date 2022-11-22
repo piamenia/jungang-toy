@@ -15,7 +15,7 @@ public class ContiListRequest {
     private Depart depart;
     private int year;
     private int month;
-    private int halfYear;
+    private Integer halfYear;
     private int offset = 1;
     private int limit = 10;
 }

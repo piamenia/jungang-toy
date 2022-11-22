@@ -36,7 +36,7 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
         if (!ObjectUtils.isEmpty(contiListRequest.getDepart())) {
             this.where.and(contiEntity.depart.eq(contiListRequest.getDepart()));
         }
-        if (contiListRequest.getHalfYear() != 0) {
+        if (contiListRequest.getHalfYear() != null) {
             List<Integer> months = new ArrayList<>();
             for (Integer month: Arrays.asList(1,2,3,4,5,6)) {
                 months.add(month + contiListRequest.getHalfYear() * 6);
