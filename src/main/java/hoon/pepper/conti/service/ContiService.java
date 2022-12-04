@@ -1,10 +1,7 @@
 package hoon.pepper.conti.service;
 
 import hoon.pepper.common.exception.EmptyDataException;
-import hoon.pepper.conti.controller.model.ContiDetailModel;
-import hoon.pepper.conti.controller.model.ContiListModel;
-import hoon.pepper.conti.controller.model.SheetModel;
-import hoon.pepper.conti.controller.model.SongModel;
+import hoon.pepper.conti.controller.model.*;
 import hoon.pepper.conti.controller.model.request.ContiListRequest;
 import hoon.pepper.conti.controller.model.request.ContiRequest;
 import hoon.pepper.conti.controller.model.request.SheetRequest;
@@ -126,5 +123,10 @@ public class ContiService {
 	@Transactional(readOnly = true)
 	public boolean checkContiPassword(Long contiId, String password) {
 		return contiRepository.findById(contiId).orElseThrow(() -> new EmptyDataException("conti not present")).getPassword().equals(password);
+	}
+
+	@Transactional(readOnly = true)
+	public ContiMaxMinDateModel getContiMaxMinDate() {
+		return contiRepository.getContiMaxMinDate();
 	}
 }

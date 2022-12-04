@@ -3,10 +3,7 @@ package hoon.pepper.conti.controller.admin;
 import hoon.pepper.common.wrapper.JpaPageContents;
 import hoon.pepper.common.wrapper.PageContents;
 import hoon.pepper.common.wrapper.ResultResponse;
-import hoon.pepper.conti.controller.model.BooleanResultModel;
-import hoon.pepper.conti.controller.model.ContiDetailModel;
-import hoon.pepper.conti.controller.model.ContiListModel;
-import hoon.pepper.conti.controller.model.EmptyResultModel;
+import hoon.pepper.conti.controller.model.*;
 import hoon.pepper.conti.controller.model.request.ContiListRequest;
 import hoon.pepper.conti.controller.model.request.ContiRequest;
 import hoon.pepper.conti.converter.ContiConverter;
@@ -34,7 +31,7 @@ public class AdminContiController {
     public ResultResponse<PageContents<ContiListModel>> getContiList(@RequestParam Integer year,
                                                                      @RequestParam Integer month,
                                                                      @RequestParam(required = false, defaultValue = "1") int offset,
-                                                                     @RequestParam(required = false, defaultValue = "10") int limit) {
+                                                                     @RequestParam(required = false, defaultValue = "99999") int limit) {
         Pageable pageable = PageRequest.of(offset - 1, limit);
         ContiListRequest contiListRequest = ContiListRequest.builder().year(year).month(month).build();
         Page<ContiListModel> results = contiService.getContiList(contiListRequest, pageable);
@@ -53,7 +50,7 @@ public class AdminContiController {
     public ResultResponse<PageContents<ContiListModel>> getContiListByHalfYear(@RequestParam Integer year,
                                                                                @RequestParam Integer halfYear,
                                                                                @RequestParam(required = false, defaultValue = "1") int offset,
-                                                                               @RequestParam(required = false, defaultValue = "10") int limit) {
+                                                                               @RequestParam(required = false, defaultValue = "99999") int limit) {
         Pageable pageable = PageRequest.of(offset - 1, limit);
         ContiListRequest contiListRequest = ContiListRequest.builder().year(year).halfYear(halfYear).build();
         Page<ContiListModel> results = contiService.getContiList(contiListRequest, pageable);

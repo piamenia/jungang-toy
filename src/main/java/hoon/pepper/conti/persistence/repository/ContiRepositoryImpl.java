@@ -6,6 +6,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import hoon.pepper.conti.controller.model.ContiDetailModel;
 import hoon.pepper.conti.controller.model.ContiListModel;
+import hoon.pepper.conti.controller.model.ContiMaxMinDateModel;
 import hoon.pepper.conti.controller.model.request.ContiListRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,5 +83,26 @@ public class ContiRepositoryImpl implements ContiRepositoryCustom {
             .where(contiEntity.contiId.eq(contiId))
             .fetchOne()
         );
+    }
+
+    @Override
+    public ContiMaxMinDateModel getContiMaxMinDate() {
+        return ContiMaxMinDateModel.builder()
+            .maxContiDate(
+                queryFactory
+                    .select(contiEntity.date)
+                    .from(contiEntity)
+                    .orderBy(contiEntity.date.desc())
+                    .limit(1)
+                    .fetchOne()
+            )
+            .minContiDate(
+                queryFactory
+                    .select(contiEntity.date)
+                    .from(contiEntity)
+                    .orderBy(contiEntity.date.asc())
+                    .limit(1)
+                    .fetchOne())
+            .build();
     }
 }
